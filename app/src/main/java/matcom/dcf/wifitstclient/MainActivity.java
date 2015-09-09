@@ -1,17 +1,25 @@
 package matcom.dcf.wifitstclient;
 
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -31,6 +39,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //
 
         editTextAddress = (EditText) findViewById(R.id.address);
         editTextPort = (EditText) findViewById(R.id.port);
@@ -42,6 +51,7 @@ public class MainActivity extends Activity {
 
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
 
+        //
         buttonClear.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -57,6 +67,7 @@ public class MainActivity extends Activity {
         public void onClick(View arg0) {
 
             String tMsg = welcomeMsg.getText().toString();
+            tMsg="*";
             if(tMsg.equals("")){
                 tMsg = null;
                 Toast.makeText(MainActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
@@ -95,10 +106,9 @@ public class MainActivity extends Activity {
                 dataOutputStream = new DataOutputStream(
                         socket.getOutputStream());
                 dataInputStream = new DataInputStream(socket.getInputStream());
+                //
+                dataOutputStream.write(readTextFile());
 
-                if(msgToServer != null){
-                    dataOutputStream.writeUTF(msgToServer);
-                }
 
                 response = dataInputStream.readUTF();
 
@@ -181,5 +191,34 @@ private int LoopCurrentIP = 0;
             LoopCurrentIP++;
         }
         return ret;
+    }
+    public byte[] readTextFile() {
+        //
+        FileInputStream fis=null;
+        byte[] dat = null;
+        //String yourFilePath = this.getFilesDir() + "/" + "Share2.txt";
+        String yourFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/df/"+ "Share2.txt";;
+        Log.i("DF - Files",yourFilePath);
+        File myFile = new File(yourFilePath);
+        try {
+            fis = new FileInputStream(myFile);
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(fis));
+            StringBuilder sb = new StringBuilder();
+            String line="";
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+                Log.i("DF - Files", line);
+            }
+            line=sb.toString();
+            if(!line.isEmpty() && line!=null) dat = line.getBytes();
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dat;
     }
 }
