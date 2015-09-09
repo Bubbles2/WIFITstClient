@@ -46,8 +46,12 @@ public class MainActivity extends Activity {
         buttonConnect = (Button) findViewById(R.id.connect);
         buttonClear = (Button) findViewById(R.id.clear);
         textResponse = (TextView) findViewById(R.id.response);
+        //
+        editTextAddress.setText("192.168.4.117");
+        editTextPort.setText("8080");
 
         welcomeMsg = (EditText)findViewById(R.id.welcomemsg);
+        welcomeMsg.setText("Donncha says HI");
 
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
 
@@ -67,7 +71,7 @@ public class MainActivity extends Activity {
         public void onClick(View arg0) {
 
             String tMsg = welcomeMsg.getText().toString();
-            tMsg="*";
+            //tMsg="*";
             if(tMsg.equals("")){
                 tMsg = null;
                 Toast.makeText(MainActivity.this, "No Welcome Msg sent", Toast.LENGTH_SHORT).show();
@@ -107,7 +111,10 @@ public class MainActivity extends Activity {
                         socket.getOutputStream());
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 //
-                dataOutputStream.write(readTextFile());
+                if(msgToServer != null){
+                   // dataOutputStream.writeUTF(msgToServer);
+                }
+                 dataOutputStream.write(readTextFile());
 
 
                 response = dataInputStream.readUTF();
